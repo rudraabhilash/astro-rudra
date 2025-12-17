@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Path | Astrology & Readings</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Load the static files tag library at the top of the template -->
+    {% load static %} 
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. VARIABLES & RESET --- */
+        :root {
+            --gold-primary: #e0aa3e;
+            --gold-light: #fbe5a8;
+            --gold-dark: #b88628;
+            --text-white: #ffffff;
+            --text-grey: #cfcfcf;
+            --bg-deep: #050510;
+            --glass-bg: rgba(20, 20, 35, 0.4); 
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-white);
+            background-color: var(--bg-deep);
+            overflow-x: hidden;
+        }
+
+        /* --- 2. ENRICHED DYNAMIC BACKGROUND --- */
+        .universe-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            overflow: hidden;
+        }
+
+        .planet {
+            position: absolute;
+            top: 10%;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle at 30% 30%, #4a2c2c, #000);
+            border-radius: 50%;
+            box-shadow: -20px -20px 50px 2px rgba(224, 170, 62, 0.1), 
+                        inset -10px -10px 40px rgba(0,0,0,0.8);
+            opacity: 0.6;
+            animation: floatPlanet 60s infinite ease-in-out;
+            z-index: -1;
+        }
+        
+        .planet::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 140%;
+            height: 20%;
+            border-radius: 50%;
+            border: 2px solid rgba(224, 170, 62, 0.1);
+            border-top: 1px solid rgba(224, 170, 62, 0.4);
+            transform: translate(-50%, -50%) rotate(-30deg);
+        }
+
+        #star-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes floatPlanet {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* --- 3. NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            position: relative;
+        }
+
+        nav ul { display: flex; list-style: none; gap: 3rem; }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-grey);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        nav a:hover, nav a.active { color: var(--gold-primary); }
+        
+        nav a.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%;
+            height: 1px; background: var(--gold-primary);
+        }
+
+        /* --- 4. HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #fbe5a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            color: var(--gold-primary);
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .line { width: 50px; height: 1px; background: var(--gold-primary); }
+
+        .hero p { color: var(--text-grey); margin-bottom: 2.5rem; font-weight: 300; font-size: 1.1rem; }
+
+        .btn {
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .btn-gold {
+            background: linear-gradient(45deg, var(--gold-dark), var(--gold-primary));
+            color: #000;
+            box-shadow: 0 0 20px rgba(224, 170, 62, 0.4);
+        }
+        
+        .btn-gold:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(224, 170, 62, 0.6); }
+
+        .btn-outline {
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            margin-left: 15px;
+            background: transparent;
+        }
+        
+        .btn-outline:hover { background: rgba(224, 170, 62, 0.1); }
+
+        /* --- 5. SERVICES --- */
+        .services {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem 5%;
+            flex-wrap: wrap;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 2.5rem;
+            width: 320px;
+            text-align: center;
+            transition: 0.4s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .glass-card:hover { transform: translateY(-10px); border-color: var(--gold-primary); }
+
+        .icon-box {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--gold-primary);
+        }
+
+        .glass-card h3 { font-family: 'Playfair Display', serif; margin-bottom: 0.8rem; font-size: 1.5rem; }
+        .glass-card p { font-size: 0.9rem; color: var(--text-grey); line-height: 1.6; }
+
+        /* --- 6. TESTIMONIAL SLIDER --- */
+        .testimonials-section {
+            padding: 6rem 10%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '✧';
+            display: block;
+            margin-top: 10px;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .slider-viewport {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .slide {
+            min-width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+        .review-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .review-card:hover { border-color: rgba(224, 170, 62, 0.3); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+
+        .quote-icon { font-size: 3rem; color: rgba(224, 170, 62, 0.2); font-family: serif; margin-bottom: 1rem; }
+        .stars { color: var(--gold-primary); font-size: 1rem; margin-bottom: 1.5rem; }
+        .review-text { font-style: italic; font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem; color: #ddd; }
+        .reviewer-info { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .reviewer-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary); margin-bottom: 10px; }
+        .reviewer-name h4 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text-white); }
+        .reviewer-name span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-light); }
+
+        .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 2rem; }
+        .dot { width: 12px; height: 12px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; cursor: pointer; transition: 0.3s; border: none; }
+        .dot.active { background: var(--gold-primary); transform: scale(1.2); }
+
+        /* --- 7. ADD REVIEW FORM (NEW SECTION) --- */
+        .write-review-section {
+            padding: 4rem 10%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .form-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--text-white);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--gold-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .rating-widget {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .rating-star {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.2s;
+        }
+
+        .rating-star:hover,
+        .rating-star.active {
+            color: var(--gold-primary);
+        }
+
+        /* --- 8. ABOUT SECTION --- */
+        .about {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5rem;
+            padding: 5rem 10%;
+            flex-wrap: wrap;
+        }
+
+        .portal-frame {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .portal-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed var(--gold-primary);
+            border-radius: 50%;
+            animation: spinRing 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        .portal-glow {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(224, 170, 62, 0.2), transparent 70%);
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        .about-img {
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulseGlow { 0% { transform: scale(0.95); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 0.9; } }
+
+        .about-text { max-width: 500px; }
+        .about-text h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 1.5rem; }
+        .about-text p { color: var(--text-grey); line-height: 1.8; margin-bottom: 2rem; }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: var(--text-grey);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .planet { width: 200px; height: 200px; top: 5%; right: -50px; }
+            .about { text-align: center; gap: 3rem; }
+            .portal-frame { width: 280px; height: 280px; }
+            nav ul { font-size: 0.8rem; gap: 1rem; }
+            .form-container { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. BACKGROUND LAYERS -->
+    <div class="universe-background">
+        <div id="star-field"></div>
+        <div class="planet"></div>
+    </div>
+
+    <!-- 2. NAVIGATION -->
+    <nav>
+        <ul>
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Reviews</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- 3. HERO SECTION -->
+    <section class="hero">
+        <h1>Align With Your Destiny</h1>
+        <div class="subtitle-decoration">
+            <div class="line"></div>
+            <span>Vedic & Western Astrology</span>
+            <div class="line"></div>
+        </div>
+        <p>Unveil the secrets of the cosmos and find your true path.</p>
+        <div>
+            <a href="#" class="btn btn-gold">Book Reading</a>
+            <a href="#" class="btn btn-outline">Explore</a>
+        </div>
+    </section>
+
+    <!-- 4. SERVICES -->
+    <section class="services">
+        <div class="glass-card">
+            <div class="icon-box"><i class="fas fa-star-and-crescent"></i></div>
+            <h3>Natal Charts</h3>
+            <p>A complete map of the heavens at your precise moment of birth, revealing your soul's blueprint.</p>
+        </div>
+        <div class="glass-card">
+            <div class="icon-box"><i class="fas fa-heart"></i></div>
+            <h3>Synastry</h3>
+            <p>Discover the karmic connections and emotional compatibility between you and your partner.</p>
+        </div>
+        <div class="glass-card">
+            <div class="icon-box"><i class="fas fa-compass"></i></div>
+            <h3>Career Path</h3>
+            <p>Align your professional life with your planetary strengths for maximum success.</p>
+        </div>
+    </section>
+
+    <!-- 5. TESTIMONIALS SLIDER SECTION -->
+    <section class="testimonials-section">
+        <h2 class="section-title">Celestial Whispers</h2>
+        
+        <div class="slider-viewport">
+            <div class="slider-track" id="slider-track">
+                <!-- Slide 1 -->
+                <div class="slide">
+                    <div class="review-card">
+                        <div class="quote-icon">“</div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"I was skeptical at first, but the accuracy was terrifyingly beautiful. She knew things about my childhood that I've never told anyone."</p>
+                        <div class="reviewer-info">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Client" class="reviewer-img">
+                            <div class="reviewer-name">
+                                <h4>Elena R.</h4>
+                                <span>Natal Chart Reading</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="slide">
+                    <div class="review-card">
+                        <div class="quote-icon">“</div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="review-text">"The relationship compatibility reading saved our marriage. We understood our communication styles for the first time."</p>
+                        <div class="reviewer-info">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Client" class="reviewer-img">
+                            <div class="reviewer-name">
+                                <h4>Mark & Sarah</h4>
+                                <span>Synastry Reading</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="slide">
+                    <div class="review-card">
+                        <div class="quote-icon">“</div>
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="review-text">"Not just a reading, but a therapy session with the stars. I left feeling empowered and ready to tackle my Saturn Return."</p>
+                        <div class="reviewer-info">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Client" class="reviewer-img">
+                            <div class="reviewer-name">
+                                <h4>Sophia K.</h4>
+                                <span>Yearly Forecast</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-dots">
+                <button class="dot active" onclick="goToSlide(0)"></button>
+                <button class="dot" onclick="goToSlide(1)"></button>
+                <button class="dot" onclick="goToSlide(2)"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. WRITE A REVIEW SECTION (NEW) -->
+    <section class="write-review-section">
+        <h2 class="section-title">Leave Your Cosmic Mark</h2>
+        
+        <div class="form-container">
+            <form id="reviewForm">
+                <!-- Name -->
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" placeholder="Enter your name" required>
+                </div>
+
+                <!-- Star Rating -->
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <div class="rating-widget" id="star-widget">
+                        <i class="far fa-star rating-star" data-value="1"></i>
+                        <i class="far fa-star rating-star" data-value="2"></i>
+                        <i class="far fa-star rating-star" data-value="3"></i>
+                        <i class="far fa-star rating-star" data-value="4"></i>
+                        <i class="far fa-star rating-star" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="rating-value" name="rating">
+                </div>
+
+                <!-- Comment -->
+                <div class="form-group">
+                    <label class="form-label">Review</label>
+                    <textarea class="form-input" rows="4" placeholder="Share your experience..." required></textarea>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-gold" style="width: 100%; border: none;">Submit Review</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 7. ABOUT SECTION -->
+    <section class="about">
+        <div class="portal-frame">
+            <div class="portal-ring"></div>
+            <div class="portal-glow"></div>
+            <img src="{% static 'payment/images/astro.avif' %}" alt="Astrologer" class="about-img">
+        </div>
+
+        <div class="about-text">
+            <h2>The Voice Behind the Stars</h2>
+            <p>With over 15 years of experience interpreting the celestial language, I help souls navigate the earthly realm. My approach combines ancient Vedic wisdom with modern psychological astrology.</p>
+            <a href="#" class="btn btn-outline">Read Full Bio</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2024 Cosmic Path Astrology. The stars incline, they do not compel.</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- STAR GENERATION ---
+        const starField = document.getElementById('star-field');
+        const starCount = 150; 
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 2 + 1;
+            const duration = Math.random() * 3 + 2;
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.setProperty('--duration', `${duration}s`);
+            starField.appendChild(star);
+        }
+
+        // --- SLIDER LOGIC ---
+        const track = document.getElementById('slider-track');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[currentSlide].classList.add('active');
+        }
+
+        // Auto play slider
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % dots.length;
+            goToSlide(currentSlide);
+        }, 5000);
+
+        // --- STAR RATING LOGIC ---
+        const stars = document.querySelectorAll('.rating-star');
+        const ratingValue = document.getElementById('rating-value');
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.getAttribute('data-value');
+                ratingValue.value = value;
+                
+                stars.forEach(s => {
+                    const sValue = s.getAttribute('data-value');
+                    if(sValue <= value) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.remove('active');
+                        s.classList.add('far');
+                    }
+                });
+            });
+        });
+
+        // --- FORM SUBMIT (Demo Alert) ---
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you! Your review has been submitted to the cosmos.');
+            this.reset();
+            // Reset stars visual
+            stars.forEach(s => {
+                s.classList.remove('fas', 'active');
+                s.classList.add('far');
+            });
+        });
+    </script>
+</body>
+</html>
