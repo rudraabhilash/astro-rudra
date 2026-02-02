@@ -109,6 +109,9 @@ def find_sign_window(
             exit_.astimezone(IST)
         )
 
+    # Debugging output
+    print(f"Entry: {entry}, Exit: {exit_}")
+    print(f"Could not find complete window for {planet} in {target_sign}")
     return None
 
 
