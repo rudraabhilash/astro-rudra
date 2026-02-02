@@ -82,17 +82,17 @@ def find_sign_window(
     step_minutes: int
 ):
     print(f"Finding window for {planet} in {target_sign} from {start_dt_utc} to {end_dt_utc}")
-    target_idx = SIGN_INDEX[target_sign]
+    target_idx = SIGN_INDEX[target_sign] #10
 
     t = start_dt_utc
     prev_sign = sign_of_longitude(planet_longitude(t, planet))
-    # print(f'Initial prev_sign: {prev_sign}')
+    print(f'Initial prev_sign: {prev_sign}') #9
     entry = exit_ = None
 
     while t <= end_dt_utc:
         lon = planet_longitude(t, planet)
         current_sign = sign_of_longitude(lon)
-        print(f'current_sign: {current_sign}')
+        # print(f'current_sign: {current_sign}')  # 8
 
         # Entry
         if entry is None and current_sign == target_idx and prev_sign != target_idx:
