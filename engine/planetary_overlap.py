@@ -89,6 +89,7 @@ def find_sign_window(
     print(f'Initial prev_sign: {prev_sign}') #9
     entry = exit_ = None
 
+# this loop loops through time from start to end, checking the planet's sign at each step is wrong somwhat
     while t <= end_dt_utc:
         lon = planet_longitude(t, planet)
         current_sign = sign_of_longitude(lon)
